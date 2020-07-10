@@ -1,12 +1,11 @@
 package com.geekxiong.vjudge.util;
 
-import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
+import org.springframework.stereotype.Component;
 
 import javax.net.ssl.*;
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,15 +13,14 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Description
+ * @Description 发送HTTP请求的工具类
  * @Author Geekxiong
  * @Date 2020-03-31 16:49
  */
 
+@Component
 public class HttpUtil {
 
-    private static final byte[] LOCKER = new byte[0];
-    private static HttpUtil httpUtil;
     private OkHttpClient mOkHttpClient;
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -54,48 +52,29 @@ public class HttpUtil {
     /**
      * 私有构造方法，单例模式
      */
-    private HttpUtil() {
+    HttpUtil() {
         OkHttpClient.Builder ClientBuilder = new OkHttpClient.Builder();
         ClientBuilder.readTimeout(20, TimeUnit.SECONDS);//读取超时
         ClientBuilder.connectTimeout(6, TimeUnit.SECONDS);//连接超时
         ClientBuilder.writeTimeout(60, TimeUnit.SECONDS);//写入超时
         //支持HTTPS请求，跳过证书验证
         ClientBuilder.sslSocketFactory(createSSLSocketFactory(), new TrustAllCerts());
-        ClientBuilder.hostnameVerifier(new HostnameVerifier() {
-            @Override
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        });
+        ClientBuilder.hostnameVerifier((hostname, session) -> true );
         mOkHttpClient = ClientBuilder.build();
     }
 
-    /**
-     * 返回单例HttpUtil
-     * @return
-     */
-    public static HttpUtil getInstance() {
-        if (httpUtil == null) {
-            synchronized (LOCKER) {
-                if (httpUtil == null) {
-                    httpUtil = new HttpUtil();
-                }
-            }
-        }
-        return httpUtil;
-    }
-
-    public static String getRandomUA(){
+    public String getRandomUA(){
         Random random = new Random();
         int i = random.nextInt(USER_AGENTS.length);
         return USER_AGENTS[i];
     }
 
     /**
-     * 同步get请求
-     * @param url
-     * @param urlParams
-     * @return
+     * 发送get请求
+     * @param url 请求的链接
+     * @param headers http请求头
+     * @param urlParams get请求的参数
+     * @return http响应
      */
     public Response doGet(String url, Map<String, String> headers, Map<String, String> urlParams) {
         //0 处理url参数
@@ -121,10 +100,11 @@ public class HttpUtil {
     }
 
     /**
-     * 同步post请求
-     * @param url
-     * @param bodyParams
-     * @return
+     * 发送post请求
+     * @param url 请求的链接
+     * @param headers http请求头
+     * @param bodyParams post请求的参数
+     * @return http响应
      */
     public Response doPost(String url, Map<String, String> headers, Map<String, String> bodyParams) {
         //1构造RequestBody
@@ -274,20 +254,18 @@ public class HttpUtil {
 
     /**
      * post的请求参数，构造RequestBody
-     *
-     * @param BodyParams
-     * @return
+     * @param BodyParams 所有的请求参数
+     * @return 构造完成的一个RequestBody
      */
     private RequestBody setRequestBody(Map<String, String> BodyParams) {
         RequestBody body;
         FormBody.Builder formEncodingBuilder = new FormBody.Builder();
         if (BodyParams != null) {
             Iterator<String> iterator = BodyParams.keySet().iterator();
-            String key = "";
+            String key;
             while (iterator.hasNext()) {
-                key = iterator.next().toString();
+                key = iterator.next();
                 formEncodingBuilder.add(key, BodyParams.get(key));
-                System.out.println("post http: post_Params===" + key + "====" + BodyParams.get(key));
             }
         }
         body = formEncodingBuilder.build();
@@ -299,7 +277,7 @@ public class HttpUtil {
 
     /**
      * 生成安全套接字工厂，用于https请求的证书跳过
-     * @return
+     * @return 安全套接字工厂
      */
     private SSLSocketFactory createSSLSocketFactory() {
         SSLSocketFactory ssfFactory = null;
@@ -308,6 +286,7 @@ public class HttpUtil {
             sc.init(null, new TrustManager[]{new TrustAllCerts()}, new SecureRandom());
             ssfFactory = sc.getSocketFactory();
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return ssfFactory;
     }
@@ -316,14 +295,14 @@ public class HttpUtil {
     /**
      * 用于信任所有证书
      */
-    private class TrustAllCerts implements X509TrustManager {
+    private static class TrustAllCerts implements X509TrustManager {
 
         @Override
-        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) {
         }
 
         @Override
-        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) {
 
         }
 
