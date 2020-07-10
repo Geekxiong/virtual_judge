@@ -2,8 +2,10 @@ package com.geekxiong.vjudge.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.geekxiong.vjudge.bean.ProblemBean;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -40,6 +42,12 @@ public class Problem {
     private String sampleOutput;
 
     @Column()
+    private Integer submitNumber;
+
+    @Column()
+    private Integer acceptNumber;
+
+    @Column()
     private String originOj;
 
     @Column()
@@ -48,9 +56,31 @@ public class Problem {
     @Column(columnDefinition="text")
     private String originUrl;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column()
+    private Date updateTime;
+
     @JsonBackReference
     @OneToMany(mappedBy = "problem", cascade = CascadeType.REFRESH)
     private Set<Submission> submissions;
+
+    public Problem(){}
+
+    public Problem(ProblemBean problemBean){
+        this.originOj = problemBean.getOjName();
+        this.originProbId = problemBean.getProbId();
+        this.originUrl = problemBean.getOriginUrl();
+        this.title = problemBean.getTitle();
+        this.description = problemBean.getDescription();
+        this.input = problemBean.getInput();
+        this.output = problemBean.getOutput();
+        this.sampleInput = problemBean.getSampleInput();
+        this.sampleOutput = problemBean.getSampleOutput();
+        this.timeLimit = problemBean.getTimeLimit();
+        this.memoryLimit = problemBean.getMemoryLimit();
+        this.submitNumber = 0;
+        this.acceptNumber = 0;
+    }
 
     public Long getId() {
         return id;
@@ -124,6 +154,22 @@ public class Problem {
         this.sampleOutput = sampleOutput;
     }
 
+    public Integer getSubmitNumber() {
+        return submitNumber;
+    }
+
+    public void setSubmitNumber(Integer submitNumber) {
+        this.submitNumber = submitNumber;
+    }
+
+    public Integer getAcceptNumber() {
+        return acceptNumber;
+    }
+
+    public void setAcceptNumber(Integer acceptNumber) {
+        this.acceptNumber = acceptNumber;
+    }
+
     public String getOriginOj() {
         return originOj;
     }
@@ -146,6 +192,14 @@ public class Problem {
 
     public void setOriginUrl(String originUrl) {
         this.originUrl = originUrl;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 
     public Set<Submission> getSubmissions() {
