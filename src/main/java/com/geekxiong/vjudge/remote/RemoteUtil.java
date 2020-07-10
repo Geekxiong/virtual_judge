@@ -20,7 +20,7 @@ public interface RemoteUtil {
 
     List<String> getSubmitLanguages(String problemId, String userAgent);
 
-    String submitCode(String problemId, String code, String language, String cookie, String userAgent);
+    String submitCode(String problemId, String code, String language, String account, String cookie, String userAgent);
 
     JudgeInfoBean getJudgeInfo(String submitId, String account);
 

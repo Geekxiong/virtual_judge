@@ -79,7 +79,7 @@ public class HDURemoteUtil implements RemoteUtil {
 
 
     @Override
-    public String submitCode(String problemId, String code, String language, String cookie, String userAgent) {
+    public String submitCode(String problemId, String code, String language, String account, String cookie, String userAgent) {
         Map<String, String> bodyParams = new HashMap<>();
         bodyParams.put("check", "0");
         bodyParams.put("problemid", problemId);
