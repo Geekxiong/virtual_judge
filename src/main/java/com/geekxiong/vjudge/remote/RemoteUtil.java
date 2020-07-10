@@ -16,6 +16,8 @@ public interface RemoteUtil {
 
     ProblemBean getProblem(String problemId, String userAgent);
 
+    ProblemBean getProblem(String problemId);
+
     List<String> getSubmitLanguages(String problemId, String userAgent);
 
     String submitCode(String problemId, String code, String language, String cookie, String userAgent);

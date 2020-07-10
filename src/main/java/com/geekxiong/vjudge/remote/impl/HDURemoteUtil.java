@@ -10,18 +10,27 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HDUOjRemoteUtil implements RemoteUtil {
+@Service("HDURemoteUtil")
+public class HDURemoteUtil implements RemoteUtil {
     private String loginUrl = "http://acm.hdu.edu.cn/userloginex.php?action=login";
     private String problemUrl = "http://acm.hdu.edu.cn/showproblem.php?pid=";
     private String submitUrl = "http://acm.hdu.edu.cn/submit.php?action=submit";
     private String statusUrl = "http://acm.hdu.edu.cn/status.php?user=";
-    private HttpUtil httpUtil = HttpUtil.getInstance();
+
+    private HttpUtil httpUtil;
+
+    @Autowired
+    public void setHttpUtil(HttpUtil httpUtil) {
+        this.httpUtil = httpUtil;
+    }
 
     @Override
     public String getCookie(String ojAccount, String password, String userAgent) {
@@ -56,11 +65,18 @@ public class HDUOjRemoteUtil implements RemoteUtil {
 //        System.out.println(html);
         ProblemBean problemBean = parseProblemInfo(html);
         problemBean.setProbId(problemId);
-        problemBean.setOjName("HDUOJ");
+        problemBean.setOjName("HDU");
         problemBean.setProbId(problemId);
         problemBean.setOriginUrl(originUrl);
         return problemBean;
     }
+
+    @Override
+    public ProblemBean getProblem(String problemId) {
+        String userAgent = httpUtil.getRandomUA();
+        return getProblem(problemId,  userAgent);
+    }
+
 
     @Override
     public String submitCode(String problemId, String code, String language, String cookie, String userAgent) {
@@ -80,7 +96,7 @@ public class HDUOjRemoteUtil implements RemoteUtil {
     @Override
     public JudgeInfoBean getJudgeInfo(String submitId, String account) {
         Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", HttpUtil.getRandomUA());
+        headers.put("User-Agent", httpUtil.getRandomUA());
         String queryUrl = statusUrl+account;
         Response response = httpUtil.doGet(queryUrl, headers, null);
         String html;
@@ -92,7 +108,7 @@ public class HDUOjRemoteUtil implements RemoteUtil {
         }
 //        System.out.println(html);
         JudgeInfoBean judgeInfoBean = parseJudgeInfo(html);
-        judgeInfoBean.setOjName("HDUOJ");
+        judgeInfoBean.setOjName("HDU");
         return judgeInfoBean;
     }
 
@@ -121,16 +137,22 @@ public class HDUOjRemoteUtil implements RemoteUtil {
         for (Element el: tmp_els) {
             Element curEl = el.nextElementSibling();
             tmpStr = el.text().trim();
-            if(tmpStr.equals("Problem Description")){
-                problemBean.setDescription(curEl.html());
-            }else if(tmpStr.equals("Input")){
-                problemBean.setInput(curEl.html());
-            }else if(tmpStr.equals("Output")){
-                problemBean.setOutput(curEl.html());
-            }else if(tmpStr.equals("Sample Input")){
-                problemBean.setSampleInput(curEl.html());
-            }else if(tmpStr.equals("Sample Output")) {
-                problemBean.setSampleOutput(curEl.html());
+            switch (tmpStr) {
+                case "Problem Description":
+                    problemBean.setDescription(curEl.html());
+                    break;
+                case "Input":
+                    problemBean.setInput(curEl.html());
+                    break;
+                case "Output":
+                    problemBean.setOutput(curEl.html());
+                    break;
+                case "Sample Input":
+                    problemBean.setSampleInput(curEl.html());
+                    break;
+                case "Sample Output":
+                    problemBean.setSampleOutput(curEl.html());
+                    break;
             }
         }
         return problemBean;
