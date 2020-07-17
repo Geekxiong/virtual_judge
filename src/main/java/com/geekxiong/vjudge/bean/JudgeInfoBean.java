@@ -8,9 +8,9 @@ public class JudgeInfoBean {
     private String status;
     private String ojName;
     private String probId;
-    private String exeTime;
-    private String exeMemory;
-    private String codeLength;
+    private Integer exeTime;
+    private Integer exeMemory;
+    private Integer codeLength;
     private String language;
 
     public String getRunId() {
@@ -53,27 +53,27 @@ public class JudgeInfoBean {
         this.probId = probId;
     }
 
-    public String getExeTime() {
+    public Integer getExeTime() {
         return exeTime;
     }
 
-    public void setExeTime(String exeTime) {
+    public void setExeTime(Integer exeTime) {
         this.exeTime = exeTime;
     }
 
-    public String getExeMemory() {
+    public Integer getExeMemory() {
         return exeMemory;
     }
 
-    public void setExeMemory(String exeMemory) {
+    public void setExeMemory(Integer exeMemory) {
         this.exeMemory = exeMemory;
     }
 
-    public String getCodeLength() {
+    public Integer getCodeLength() {
         return codeLength;
     }
 
-    public void setCodeLength(String codeLength) {
+    public void setCodeLength(Integer codeLength) {
         this.codeLength = codeLength;
     }
 
