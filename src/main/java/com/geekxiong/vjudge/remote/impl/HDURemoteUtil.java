@@ -168,9 +168,20 @@ public class HDURemoteUtil implements RemoteUtil {
         judgeInfoBean.setSubmitTime(CommonUtil.dateStr2Date(items.get(1).text()));
         judgeInfoBean.setStatus(items.get(2).text());
         judgeInfoBean.setProbId(items.get(3).text());
-        judgeInfoBean.setExeTime(items.get(4).text());
-        judgeInfoBean.setExeMemory(items.get(5).text());
-        judgeInfoBean.setCodeLength(items.get(6).text());
+
+        // 运行时间
+        String exeTimeStr = items.get(4).text();
+        Integer exeTime = Integer.parseInt(exeTimeStr.replace("MS","").trim());
+        judgeInfoBean.setExeTime(exeTime);
+        // 运行内存
+        String exeMemoryStr = items.get(5).text();
+        Integer exeMemory = Integer.parseInt(exeMemoryStr.replace("K","").trim());
+        judgeInfoBean.setExeMemory(exeMemory);
+        // 代码长度
+        String CodeLengthStr = items.get(6).text();
+        Integer CodeLength = Integer.parseInt(CodeLengthStr.replace("B","").trim());
+        judgeInfoBean.setCodeLength(CodeLength);
+
         judgeInfoBean.setLanguage(items.get(7).text());
         return judgeInfoBean;
     }

@@ -159,9 +159,18 @@ public class FZURemoteUtil implements RemoteUtil {
         judgeInfoBean.setStatus(items.get(2).text());
         judgeInfoBean.setProbId(items.get(3).text());
         judgeInfoBean.setLanguage(items.get(4).text());
-        judgeInfoBean.setExeTime(items.get(5).text());
-        judgeInfoBean.setExeMemory(items.get(6).text());
-        judgeInfoBean.setCodeLength(items.get(7).text());
+        // 运行时间
+        String exeTimeStr = items.get(5).text();
+        Integer exeTime = Integer.parseInt(exeTimeStr.replace("ms","").trim());
+        judgeInfoBean.setExeTime(exeTime);
+        // 运行内存
+        String exeMemoryStr = items.get(6).text();
+        Integer exeMemory = Integer.parseInt(exeMemoryStr.replace("KB","").trim());
+        judgeInfoBean.setExeMemory(exeMemory);
+        // 代码长度
+        String CodeLengthStr = items.get(7).text();
+        Integer CodeLength = Integer.parseInt(CodeLengthStr.replace("B","").trim());
+        judgeInfoBean.setCodeLength(CodeLength);
 
         return judgeInfoBean;
     }
