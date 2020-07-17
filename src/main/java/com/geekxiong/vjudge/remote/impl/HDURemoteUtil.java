@@ -94,7 +94,7 @@ public class HDURemoteUtil implements RemoteUtil {
     }
 
     @Override
-    public JudgeInfoBean getJudgeInfo(String submitId, String account) {
+    public JudgeInfoBean getJudgeInfo(String originRunId, String account) {
         Map<String, String> headers = new HashMap<>();
         headers.put("User-Agent", httpUtil.getRandomUA());
         String queryUrl = statusUrl+account;
@@ -133,8 +133,8 @@ public class HDURemoteUtil implements RemoteUtil {
         problemBean.setTimeLimit(timeLimit);
         problemBean.setMemoryLimit(memoryLimit);
 
-        Elements tmp_els = doc.select("div.panel_title[align=left]");
-        for (Element el: tmp_els) {
+        Elements tmpEls = doc.select("div.panel_title[align=left]");
+        for (Element el: tmpEls) {
             Element curEl = el.nextElementSibling();
             tmpStr = el.text().trim();
             switch (tmpStr) {

@@ -22,7 +22,7 @@ public interface RemoteUtil {
 
     String submitCode(String problemId, String code, String language, String account, String cookie, String userAgent);
 
-    JudgeInfoBean getJudgeInfo(String submitId, String account);
+    JudgeInfoBean getJudgeInfo(String originRunId, String account);
 
 
 

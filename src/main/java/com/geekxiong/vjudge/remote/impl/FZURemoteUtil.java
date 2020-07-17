@@ -100,7 +100,7 @@ public class FZURemoteUtil implements RemoteUtil {
     }
 
     @Override
-    public JudgeInfoBean getJudgeInfo(String submitId, String account) {
+    public JudgeInfoBean getJudgeInfo(String originRunId, String account) {
         Map<String, String> headers = new HashMap<>();
         headers.put("User-Agent", httpUtil.getRandomUA());
         String queryUrl = statusUrl+account;
