@@ -28,6 +28,7 @@ public class Submission {
 
     @Column()
     private Integer status;
+    // 这是提交之前的三个状态，submitting: 0 submit_failed: 1 submit_success: 2
 
     @Column()
     private String originRunId;
@@ -46,6 +47,13 @@ public class Submission {
 
     @Column()
     private String judgeStatus;
+
+
+    public interface Status {
+        Integer SUBMITTING = 0;
+        Integer SUBMIT_FAILED = 1;
+        Integer JUDGING = 2;
+    }
 
     public Long getId() {
         return id;
