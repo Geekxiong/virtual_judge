@@ -35,3 +35,7 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
       location: /online_judge_data/tmp/
+
+config_file:
+  account: config/remote_account.json
+  language: config/language_config.json
