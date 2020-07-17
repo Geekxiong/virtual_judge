@@ -107,6 +107,8 @@ public class RemoteDispatcher {
         Problem problem = submission.getProblem();
         RemoteUtil remoteUtil = remoteUtilRegister.getRemoteUtil(problem.getOriginOj()+"RemoteUtil");
         // 先提交代码
+        // 大部分OJ 不会返回runId
+        // 这时候需要趁着这个账号还在锁死中的时候去查询oj中的status得到runId
         String runId = remoteUtil.submitCode(
                 problem.getOriginProbId(),
                 submission.getCode(),
@@ -115,7 +117,7 @@ public class RemoteDispatcher {
                 account.getCookie(),
                 account.getUserAgent());
         // 然后进行第一次查询，其目的是获取到原始的run id
-        JudgeInfoBean judgeInfo = remoteUtil.getJudgeInfo(runId, account.getAccount());
+        JudgeInfoBean judgeInfo = remoteUtil.getJudgeInfo(runId, problem.getOriginProbId(), account.getAccount());
         submission.setStatus(Submission.Status.JUDGING);
         submission.setOriginRunId(judgeInfo.getRunId());
         submission.setJudgeStatus(judgeInfo.getStatus());
