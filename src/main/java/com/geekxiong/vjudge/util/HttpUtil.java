@@ -63,7 +63,7 @@ public class HttpUtil {
         mOkHttpClient = ClientBuilder.build();
     }
 
-    public String getRandomUA(){
+    public static String getRandomUA(){
         Random random = new Random();
         int i = random.nextInt(USER_AGENTS.length);
         return USER_AGENTS[i];
