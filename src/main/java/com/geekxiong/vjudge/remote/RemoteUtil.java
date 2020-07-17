@@ -24,6 +24,8 @@ public interface RemoteUtil {
 
     JudgeInfoBean getJudgeInfo(String originRunId, String probId, String account);
 
+    Boolean isJudging(String judgeStatus);
+
 
 
 }

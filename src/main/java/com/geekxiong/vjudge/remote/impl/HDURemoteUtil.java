@@ -119,6 +119,11 @@ public class HDURemoteUtil implements RemoteUtil {
     }
 
     @Override
+    public Boolean isJudging(String judgeStatus) {
+        return judgeStatus.equals("Queuing");
+    }
+
+    @Override
     public List<String> getSubmitLanguages(String problemId, String userAgent) {
         return null;
     }

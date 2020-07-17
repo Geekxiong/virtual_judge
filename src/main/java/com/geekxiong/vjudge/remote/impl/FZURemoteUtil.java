@@ -124,6 +124,11 @@ public class FZURemoteUtil implements RemoteUtil {
         return judgeInfoBean;
     }
 
+    @Override
+    public Boolean isJudging(String judgeStatus) {
+        return judgeStatus.equals("Queuing");
+    }
+
     public ProblemBean parseProblemInfo(String html){
         ProblemBean problemBean = new ProblemBean();
         Document doc = Jsoup.parse(html);
