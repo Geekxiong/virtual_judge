@@ -11,7 +11,7 @@ public class JudgeInfoBean {
     private String exeTime;
     private String exeMemory;
     private String codeLength;
-    private String Language;
+    private String language;
 
     public String getRunId() {
         return runId;
@@ -78,11 +78,11 @@ public class JudgeInfoBean {
     }
 
     public String getLanguage() {
-        return Language;
+        return language;
     }
 
     public void setLanguage(String language) {
-        Language = language;
+        this.language = language;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class JudgeInfoBean {
                 ", exeTime='" + exeTime + '\'' +
                 ", exeMemory='" + exeMemory + '\'' +
                 ", codeLength='" + codeLength + '\'' +
-                ", Language='" + Language + '\'' +
+                ", language='" + language + '\'' +
                 '}';
     }
 }
