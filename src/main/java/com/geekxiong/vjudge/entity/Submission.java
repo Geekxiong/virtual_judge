@@ -23,6 +23,9 @@ public class Submission {
     @Column()
     private Date submitTime;
 
+    @Column()
+    private String submitAccount;
+
     @Column(columnDefinition="text")
     private String code;
 
@@ -54,6 +57,7 @@ public class Submission {
         Integer SUBMIT_FAILED = 1;
         Integer JUDGING = 2;
         Integer JUDGED = 3;
+        Integer QUERY_FAILED = 4;
     }
 
     public Long getId() {
@@ -86,6 +90,14 @@ public class Submission {
 
     public void setSubmitTime(Date submitTime) {
         this.submitTime = submitTime;
+    }
+
+    public String getSubmitAccount() {
+        return submitAccount;
+    }
+
+    public void setSubmitAccount(String submitAccount) {
+        this.submitAccount = submitAccount;
     }
 
     public String getCode() {
@@ -151,4 +163,5 @@ public class Submission {
     public void setJudgeStatus(String judgeStatus) {
         this.judgeStatus = judgeStatus;
     }
+
 }
