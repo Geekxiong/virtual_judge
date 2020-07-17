@@ -53,6 +53,7 @@ public class Submission {
         Integer SUBMITTING = 0;
         Integer SUBMIT_FAILED = 1;
         Integer JUDGING = 2;
+        Integer JUDGED = 3;
     }
 
     public Long getId() {
