@@ -3,6 +3,7 @@ package com.geekxiong.vjudge.remote;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.geekxiong.vjudge.bean.AccountBean;
 import com.geekxiong.vjudge.bean.JudgeInfoBean;
 import com.geekxiong.vjudge.entity.Problem;
 import com.geekxiong.vjudge.entity.Submission;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -30,12 +32,10 @@ import java.util.*;
 @Component
 public class RemoteDispatcher {
     private RemoteUtilRegister remoteUtilRegister;
-
     private Map<String, List<AccountBean>> remoteAccounts;
     private RedisUtil redisUtil;
     private SubmissionRepository submissionRepository;
     private final String SUBMIT_QUEUE = "submit_queue";
-    private final String QUERY_QUEUE = "query_queue";
     private final Long EXPIRATION_TIME = 30L*60*1000;
 
     @Autowired
@@ -50,7 +50,6 @@ public class RemoteDispatcher {
     public void setSubmissionRepository(SubmissionRepository submissionRepository) {
         this.submissionRepository = submissionRepository;
     }
-
 
     RemoteDispatcher(@Value("${config_file.account}") String accountFilePath) throws IOException {
         initAccounts(accountFilePath);
@@ -87,23 +86,66 @@ public class RemoteDispatcher {
             redisUtil.leftPushToList(SUBMIT_QUEUE, submitTask);
             return;
         }
-        // 新起一个线程来处理代码提交
-        // TODO 换成线程池的形式
-        new Thread(()->{
-            // 都有了，可以提交代码了
-            Submission submission = submissionRepository.findById(submitId).orElse(null);
-            submitCode(submission, account);
-            account.setLock(false);
-            account.setLastUseTime(System.currentTimeMillis());
-        }).start();
+        // 异步处理代码提交
+        execAsyncSubmit(submitId, account);
     }
+
+    /**
+     * 该方法会被异步执行，
+     * @param submitId 提交的Id
+     * @param account 提交的账号
+     */
+    @Async("submitCodeExecutor")
+    void execAsyncSubmit(Long submitId, AccountBean account){
+        Submission submission = submissionRepository.findById(submitId).orElse(null);
+        Boolean isJudging = submitCode(submission, account);
+        account.setLock(false);
+        account.setLastUseTime(System.currentTimeMillis());
+        if(isJudging){
+            exeAsyncQuery(submission);
+        }
+    }
+
+    /**
+     * 异步查询判题结果
+     * @param submission 代码提交记录
+     */
+    @Async("queryJudgeInfoExecutor")
+    void exeAsyncQuery(Submission submission){
+        Problem problem = submission.getProblem();
+        RemoteUtil remoteUtil = remoteUtilRegister.getRemoteUtil(problem.getOriginOj()+"RemoteUtil");
+        // 如果查询时还在判题，就暂停一秒钟，然后再查
+        int maxQueryTimes = 20;
+        JudgeInfoBean judgeInfo;
+        do {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            judgeInfo = remoteUtil.getJudgeInfo(submission.getOriginRunId(), problem.getOriginProbId(), submission.getSubmitAccount());
+            maxQueryTimes--;
+        }while (remoteUtil.isJudging(judgeInfo.getStatus())&&maxQueryTimes>=0);
+        if(maxQueryTimes<0){
+            submission.setStatus(Submission.Status.QUERY_FAILED);
+        }else {
+            submission.setStatus(Submission.Status.JUDGED);
+            submission.setJudgeStatus(judgeInfo.getStatus());
+            submission.setExeMemory(judgeInfo.getExeMemory());
+            submission.setExeTime(judgeInfo.getExeTime());
+            submission.setCodeLength(judgeInfo.getCodeLength());
+        }
+        submissionRepository.save(submission);
+    }
+
 
     /**
      * 提交代码，并获取其runID
      * @param submission 代码提交记录
      * @param account 用于提交代码的账号
+     * @return 返回是否需要进线程池进行结果查询
      */
-    public void submitCode(Submission submission, AccountBean account){
+    private Boolean submitCode(Submission submission, AccountBean account){
         Problem problem = submission.getProblem();
         RemoteUtil remoteUtil = remoteUtilRegister.getRemoteUtil(problem.getOriginOj()+"RemoteUtil");
         // 先提交代码
@@ -124,7 +166,10 @@ public class RemoteDispatcher {
         submission.setExeMemory(judgeInfo.getExeMemory());
         submission.setExeTime(judgeInfo.getExeTime());
         submission.setCodeLength(judgeInfo.getCodeLength());
+        submission.setSubmitAccount(account.getAccount());
         submissionRepository.save(submission);
+        // 如果还在判题中，那么就就要异步循环获取它的结果
+        return remoteUtil.isJudging(submission.getJudgeStatus());
     }
 
 
@@ -164,7 +209,6 @@ public class RemoteDispatcher {
      */
     private AccountBean getFreeAccount(String ojName){
         List<AccountBean> accounts = remoteAccounts.get(ojName);
-
         for(AccountBean account: accounts){
             // 如果被占用，就看下一个
             if(account.isLock()){
@@ -210,76 +254,5 @@ public class RemoteDispatcher {
             return now - lastUseTime <= EXPIRATION_TIME;
         }
         return false;
-    }
-
-
-
-
-}
-
-
-class AccountBean {
-    private String oj;
-    private String account;
-    private String password;
-    private String cookie;
-    private String userAgent;
-    private Long lastUseTime;
-    private boolean lock;
-
-    public String getOj() {
-        return oj;
-    }
-
-    public void setOj(String oj) {
-        this.oj = oj;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getCookie() {
-        return cookie;
-    }
-
-    public void setCookie(String cookie) {
-        this.cookie = cookie;
-    }
-
-    public String getUserAgent() {
-        return userAgent;
-    }
-
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
-
-    public Long getLastUseTime() {
-        return lastUseTime;
-    }
-
-    public void setLastUseTime(Long lastUseTime) {
-        this.lastUseTime = lastUseTime;
-    }
-
-    public boolean isLock() {
-        return lock;
-    }
-
-    public void setLock(boolean lock) {
-        this.lock = lock;
     }
 }
