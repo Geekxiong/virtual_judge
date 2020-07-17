@@ -25,7 +25,7 @@ public class FZURemoteUtil implements RemoteUtil {
     private String loginUrl = "http://acm.fzu.edu.cn/login.php?act=1&dir=";
     private String problemUrl = "http://acm.fzu.edu.cn/problem.php?pid=";
     private String submitUrl = "http://acm.fzu.edu.cn/submit.php?act=5";
-    private String statusUrl = "http://acm.fzu.edu.cn/log.php?user=";
+    private String statusUrl = "http://acm.fzu.edu.cn/log.php";
 
     private HttpUtil httpUtil;
 
@@ -100,11 +100,17 @@ public class FZURemoteUtil implements RemoteUtil {
     }
 
     @Override
-    public JudgeInfoBean getJudgeInfo(String originRunId, String account) {
+    public JudgeInfoBean getJudgeInfo(String originRunId, String probId, String account) {
         Map<String, String> headers = new HashMap<>();
         headers.put("User-Agent", httpUtil.getRandomUA());
-        String queryUrl = statusUrl+account;
-        Response response = httpUtil.doGet(queryUrl, headers, null);
+        // get请求参数，user指定账号，
+        Map<String, String> urlParams = new HashMap<>();
+        urlParams.put("user", account);
+        // pid指定题目，进一步筛选结果
+        if(originRunId!=null){
+            urlParams.put("pid", probId);
+        }
+        Response response = httpUtil.doGet(statusUrl, headers, urlParams);
         String html;
         try {
             html = response.body().string();
@@ -113,7 +119,7 @@ public class FZURemoteUtil implements RemoteUtil {
             return null;
         }
 //        System.out.println(html);
-        JudgeInfoBean judgeInfoBean = parseJudgeInfo(html);
+        JudgeInfoBean judgeInfoBean = parseJudgeInfo(html, originRunId);
         judgeInfoBean.setOjName("FZU");
         return judgeInfoBean;
     }
@@ -149,10 +155,27 @@ public class FZURemoteUtil implements RemoteUtil {
         return problemBean;
     }
 
-    private JudgeInfoBean parseJudgeInfo(String html){
+    private JudgeInfoBean parseJudgeInfo(String html, String originRunId){
         JudgeInfoBean judgeInfoBean = new JudgeInfoBean();
         Document doc = Jsoup.parse(html);
-        Element submitRecord = doc.selectFirst("tr[onmouseover=hl(this);]");
+        Element submitRecord = null;
+        if(originRunId==null){
+            submitRecord = doc.selectFirst("tr[onmouseover=hl(this);]");
+        }else {
+            // 如果输入了runId，那就要去查询结果中找相应的那一条记录
+            Elements submitRecords = doc.select("tr[onmouseover=hl(this);]");
+            for(Element tmpRecord: submitRecords){
+                String tmpRunId = tmpRecord.selectFirst("td").text();
+                if(tmpRunId.equals(originRunId)){
+                    submitRecord = tmpRecord;
+                    break;
+                }
+            }
+        }
+        if(submitRecord == null){
+            return null;
+        }
+
         Elements items = submitRecord.select("td");
         judgeInfoBean.setRunId(items.get(0).text());
         judgeInfoBean.setSubmitTime(CommonUtil.dateStr2Date(items.get(1).text()));

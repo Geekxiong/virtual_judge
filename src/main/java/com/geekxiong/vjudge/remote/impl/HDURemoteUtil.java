@@ -23,7 +23,7 @@ public class HDURemoteUtil implements RemoteUtil {
     private String loginUrl = "http://acm.hdu.edu.cn/userloginex.php?action=login";
     private String problemUrl = "http://acm.hdu.edu.cn/showproblem.php?pid=";
     private String submitUrl = "http://acm.hdu.edu.cn/submit.php?action=submit";
-    private String statusUrl = "http://acm.hdu.edu.cn/status.php?user=";
+    private String statusUrl = "http://acm.hdu.edu.cn/status.php";
 
     private HttpUtil httpUtil;
 
@@ -94,11 +94,17 @@ public class HDURemoteUtil implements RemoteUtil {
     }
 
     @Override
-    public JudgeInfoBean getJudgeInfo(String originRunId, String account) {
+    public JudgeInfoBean getJudgeInfo(String originRunId, String probId, String account) {
         Map<String, String> headers = new HashMap<>();
         headers.put("User-Agent", httpUtil.getRandomUA());
-        String queryUrl = statusUrl+account;
-        Response response = httpUtil.doGet(queryUrl, headers, null);
+        // get请求参数，第一个是从指定的runId开始，所以第一个就是结果
+        Map<String, String> urlParams = new HashMap<>();
+        urlParams.put("usr", account);
+        if(originRunId!=null){
+            urlParams.put("first", originRunId);
+        }
+
+        Response response = httpUtil.doGet(statusUrl, headers, urlParams);
         String html;
         try {
             html = response.body().string();
