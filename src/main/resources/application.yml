@@ -37,5 +37,5 @@ spring:
       location: /online_judge_data/tmp/
 
 config_file:
-  account: config/remote_account.json
-  language: config/language_config.json
+  account: remote_account.json
+  language: language_config.json
