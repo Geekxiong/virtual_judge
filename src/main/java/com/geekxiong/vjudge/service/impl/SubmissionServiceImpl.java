@@ -56,4 +56,10 @@ public class SubmissionServiceImpl implements SubmissionService {
         remoteDispatcher.pushSubmitQueue(submission.getId(), problem.getOriginOj());
         return submission.getId();
     }
+
+    @Override
+    public Submission getById(Long id) {
+        Submission submission = submissionRepository.findById(id).orElse(null);
+        return submission;
+    }
 }
