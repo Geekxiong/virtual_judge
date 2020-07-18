@@ -4,15 +4,12 @@ import com.geekxiong.vjudge.bean.ResponseBean;
 import com.geekxiong.vjudge.entity.Problem;
 import com.geekxiong.vjudge.service.ProblemService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
+/**
+ * @author xiong
+ */
 @RestController
 @RequestMapping("/api/problem")
 public class ProblemController {
@@ -30,6 +27,24 @@ public class ProblemController {
             @PathVariable("problemId") String problemId){
         ResponseBean responseBean = ResponseBean.newResponse();
         Problem problem = problemService.getProblemByOjAndProbId(ojName, problemId);
+        responseBean.setData(problem);
+        responseBean.isSuccess();
+        return responseBean;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseBean info(@PathVariable("id") Long problemId){
+        ResponseBean responseBean = ResponseBean.newResponse();
+        Problem problem = problemService.getProblemById(problemId);
+        responseBean.setData(problem);
+        responseBean.isSuccess();
+        return responseBean;
+    }
+
+    @PutMapping("/{id}")
+    public ResponseBean update(@PathVariable("id")Long problemId){
+        ResponseBean responseBean = ResponseBean.newResponse();
+        Problem problem = problemService.updateProblemById(problemId);
         responseBean.setData(problem);
         responseBean.isSuccess();
         return responseBean;

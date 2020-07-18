@@ -6,5 +6,8 @@ public interface ProblemService {
 
     Problem getProblemByOjAndProbId(String ojName, String problemId);
 
+    Problem getProblemById(Long problemId);
+
+    Problem updateProblemById(Long problemId);
 
 }

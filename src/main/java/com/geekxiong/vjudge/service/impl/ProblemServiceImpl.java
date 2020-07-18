@@ -39,4 +39,31 @@ public class ProblemServiceImpl implements ProblemService {
         }
         return problem;
     }
+
+    @Override
+    public Problem getProblemById(Long problemId) {
+        Problem problem = problemRepository.findById(problemId).orElse(null);
+        return problem;
+    }
+
+    @Override
+    public Problem updateProblemById(Long problemId) {
+        Problem problem = problemRepository.findById(problemId).orElse(null);
+        String ojName = problem.getOriginOj();
+        RemoteUtil remoteUtil = remoteUtilRegister.getRemoteUtil(ojName+"RemoteUtil");
+        ProblemBean problemBean = remoteUtil.getProblem(problem.getOriginProbId());
+        problem.setTitle(problemBean.getTitle());
+        problem.setDescription(problemBean.getDescription());
+        problem.setInput(problemBean.getInput());
+        problem.setOutput(problemBean.getOutput());
+        problem.setSampleInput(problemBean.getSampleInput());
+        problem.setSampleOutput(problemBean.getSampleOutput());
+        problem.setTimeLimit(problemBean.getTimeLimit());
+        problem.setMemoryLimit(problemBean.getMemoryLimit());
+        problem.setUpdateTime(new Date());
+        problemRepository.save(problem);
+        return problem;
+    }
+
+
 }
