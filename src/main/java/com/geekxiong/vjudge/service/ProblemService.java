@@ -4,10 +4,10 @@ import com.geekxiong.vjudge.entity.Problem;
 
 public interface ProblemService {
 
-    Problem getProblemByOjAndProbId(String ojName, String problemId);
+    Problem getByOjAndProbId(String ojName, String problemId);
 
-    Problem getProblemById(Long problemId);
+    Problem getById(Long problemId);
 
-    Problem updateProblemById(Long problemId);
+    Problem updateById(Long problemId);
 
 }

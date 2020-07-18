@@ -28,7 +28,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public Problem getProblemByOjAndProbId(String ojName, String problemId) {
+    public Problem getByOjAndProbId(String ojName, String problemId) {
         Problem problem = problemRepository.findByOriginOjAndOriginProbId(ojName, problemId);
         if(problem==null){
             RemoteUtil remoteUtil = remoteUtilRegister.getRemoteUtil(ojName+"RemoteUtil");
@@ -41,13 +41,13 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public Problem getProblemById(Long problemId) {
+    public Problem getById(Long problemId) {
         Problem problem = problemRepository.findById(problemId).orElse(null);
         return problem;
     }
 
     @Override
-    public Problem updateProblemById(Long problemId) {
+    public Problem updateById(Long problemId) {
         Problem problem = problemRepository.findById(problemId).orElse(null);
         String ojName = problem.getOriginOj();
         RemoteUtil remoteUtil = remoteUtilRegister.getRemoteUtil(ojName+"RemoteUtil");
