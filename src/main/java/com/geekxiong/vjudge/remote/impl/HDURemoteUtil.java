@@ -73,7 +73,7 @@ public class HDURemoteUtil implements RemoteUtil {
 
     @Override
     public ProblemBean getProblem(String problemId) {
-        String userAgent = httpUtil.getRandomUA();
+        String userAgent = HttpUtil.getRandomUA();
         return getProblem(problemId,  userAgent);
     }
 
@@ -96,7 +96,7 @@ public class HDURemoteUtil implements RemoteUtil {
     @Override
     public JudgeInfoBean getJudgeInfo(String originRunId, String probId, String account) {
         Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", httpUtil.getRandomUA());
+        headers.put("User-Agent", HttpUtil.getRandomUA());
         // get请求参数，第一个是从指定的runId开始，所以第一个就是结果
         Map<String, String> urlParams = new HashMap<>();
         urlParams.put("usr", account);
@@ -159,10 +159,10 @@ public class HDURemoteUtil implements RemoteUtil {
                     problemBean.setOutput(curEl.html());
                     break;
                 case "Sample Input":
-                    problemBean.setSampleInput(curEl.html());
+                    problemBean.setSampleInput(curEl.selectFirst("pre").text());
                     break;
                 case "Sample Output":
-                    problemBean.setSampleOutput(curEl.html());
+                    problemBean.setSampleOutput(curEl.selectFirst("pre").text());
                     break;
             }
         }

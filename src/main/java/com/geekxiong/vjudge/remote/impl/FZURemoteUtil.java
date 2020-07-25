@@ -74,7 +74,7 @@ public class FZURemoteUtil implements RemoteUtil {
 
     @Override
     public ProblemBean getProblem(String problemId) {
-        String userAgent = httpUtil.getRandomUA();
+        String userAgent = HttpUtil.getRandomUA();
         return getProblem(problemId,  userAgent);
     }
 
@@ -102,7 +102,7 @@ public class FZURemoteUtil implements RemoteUtil {
     @Override
     public JudgeInfoBean getJudgeInfo(String originRunId, String probId, String account) {
         Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", httpUtil.getRandomUA());
+        headers.put("User-Agent", HttpUtil.getRandomUA());
         // get请求参数，user指定账号，
         Map<String, String> urlParams = new HashMap<>();
         urlParams.put("user", account);
@@ -152,10 +152,10 @@ public class FZURemoteUtil implements RemoteUtil {
         problemBean.setOutput(contentDescNodes.get(2).html());
 
         Elements contentDataNodes = contentNodes.select("div.data");
-        String sampleInput = contentDataNodes.get(0).html();
-        String sampleOutput = contentDataNodes.get(1).html();
-        problemBean.setSampleInput("<pre>"+sampleInput+"</pre>");
-        problemBean.setSampleOutput("<pre>"+sampleOutput+"</pre>");
+        String sampleInput = contentDataNodes.get(0).text();
+        String sampleOutput = contentDataNodes.get(1).text();
+        problemBean.setSampleInput(sampleInput);
+        problemBean.setSampleOutput(sampleOutput);
 
         return problemBean;
     }
