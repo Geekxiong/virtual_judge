@@ -26,16 +26,16 @@ public class ProblemController {
             @PathVariable("ojName") String ojName,
             @PathVariable("problemId") String problemId){
         ResponseBean responseBean = ResponseBean.newResponse();
-        Problem problem = problemService.getProblemByOjAndProbId(ojName, problemId);
+        Problem problem = problemService.getByOjAndProbId(ojName, problemId);
         responseBean.setData(problem);
         responseBean.isSuccess();
         return responseBean;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/vj-{id}")
     public ResponseBean info(@PathVariable("id") Long problemId){
         ResponseBean responseBean = ResponseBean.newResponse();
-        Problem problem = problemService.getProblemById(problemId);
+        Problem problem = problemService.getById(problemId);
         responseBean.setData(problem);
         responseBean.isSuccess();
         return responseBean;
@@ -44,7 +44,7 @@ public class ProblemController {
     @PutMapping("/{id}")
     public ResponseBean update(@PathVariable("id")Long problemId){
         ResponseBean responseBean = ResponseBean.newResponse();
-        Problem problem = problemService.updateProblemById(problemId);
+        Problem problem = problemService.updateById(problemId);
         responseBean.setData(problem);
         responseBean.isSuccess();
         return responseBean;
