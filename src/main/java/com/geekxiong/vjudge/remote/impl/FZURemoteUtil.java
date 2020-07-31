@@ -136,12 +136,12 @@ public class FZURemoteUtil implements RemoteUtil {
         String title = titleNode.text();
         problemBean.setTitle(title);
 
-        Element timeAndMemoryLimitNode = doc.selectFirst("div.problem_desc");
+        Element timeAndMemoryLimitNode = doc.selectFirst("div.problem_desc>h3");
         String tmpStr = timeAndMemoryLimitNode.html();
-        tmpStr = tmpStr.substring(tmpStr.indexOf("<br />")+6);
+        tmpStr = tmpStr.split("<br>")[1];
         String[] tmpStrs = tmpStr.split("&nbsp;&nbsp;&nbsp;&nbsp;");
         String timeLimit = tmpStrs[0].replace("Time Limit: ", "");
-        String memoryLimit = tmpStrs[1].replace("Memory Limit: ", "");
+        String memoryLimit = tmpStrs[1].replace("Memory Limit : ", "");
         problemBean.setTimeLimit(timeLimit);
         problemBean.setMemoryLimit(memoryLimit);
 
@@ -151,9 +151,8 @@ public class FZURemoteUtil implements RemoteUtil {
         problemBean.setInput(contentDescNodes.get(1).html());
         problemBean.setOutput(contentDescNodes.get(2).html());
 
-        Elements contentDataNodes = contentNodes.select("div.data");
-        String sampleInput = contentDataNodes.get(0).text();
-        String sampleOutput = contentDataNodes.get(1).text();
+        String sampleInput = CommonUtil.regFind(html, "Sample Input</h2>\\s*<div class=\"data\">([\\s\\S]*?)</div>\\s*<h2><img");
+        String sampleOutput = CommonUtil.regFind(html, "Sample Output</h2>\\s*<div class=\"data\">([\\s\\S]*?)</div>\\s*(<h2><img|</div>\\s*<br />)");
         problemBean.setSampleInput(sampleInput);
         problemBean.setSampleOutput(sampleOutput);
 
