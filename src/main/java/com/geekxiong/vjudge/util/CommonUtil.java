@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommonUtil {
     /**
@@ -59,11 +61,23 @@ public class CommonUtil {
         return calendar.getTime();
     }
 
-    public static String getHtmlWithWrap(String bodyHtml){
-        //获得带有保留的br和p标签的漂亮打印的html
-        String prettyPrintedBodyFragment = Jsoup.clean(bodyHtml, "", Whitelist.none().addTags("br", "p"), new Document.OutputSettings().prettyPrint(true));
-        // 通过禁用prettyPrint获得带有保留的换行符的纯文本
-        return Jsoup.clean(prettyPrintedBodyFragment, "", Whitelist.none(), new Document.OutputSettings().prettyPrint(false));
+    public static String regFind(String text, String reg, int i){
+        Matcher m = Pattern.compile(reg, Pattern.CASE_INSENSITIVE).matcher(text);
+        return m.find() ? m.group(i) : "";
+    }
+
+    public static String regFind(String text, String reg){
+        return regFind(text, reg, 1);
+    }
+
+
+    public static String regFindCaseSensitive(String text, String reg, int i){
+        Matcher m = Pattern.compile(reg).matcher(text);
+        return m.find() ? m.group(i) : "";
+    }
+
+    public static String regFindCaseSensitive(String text, String reg){
+        return regFindCaseSensitive(text, reg, 1);
     }
 
 }
