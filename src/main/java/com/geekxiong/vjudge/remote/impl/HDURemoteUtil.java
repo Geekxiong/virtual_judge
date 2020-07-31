@@ -12,6 +12,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -160,6 +161,11 @@ public class HDURemoteUtil implements RemoteUtil {
                     problemBean.setSampleOutput(curEl.selectFirst("pre").text());
                     break;
             }
+            String hint =  CommonUtil.regFind(html, "<i>Hint</i></div>([\\s\\S]*?)</div><i style='font-size:1px'>");
+            if(StringUtils.hasText(hint)){
+                problemBean.setHint("<pre>" +hint+ "</pre>");
+            }
+
         }
         return problemBean;
     }

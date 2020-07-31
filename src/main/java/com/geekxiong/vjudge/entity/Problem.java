@@ -41,6 +41,9 @@ public class Problem {
     @Column(columnDefinition="text")
     private String sampleOutput;
 
+    @Column(columnDefinition="text")
+    private String hint;
+
     @Column()
     private Integer submitNumber;
 
@@ -76,6 +79,7 @@ public class Problem {
         this.output = problemBean.getOutput();
         this.sampleInput = problemBean.getSampleInput();
         this.sampleOutput = problemBean.getSampleOutput();
+        this.hint = problemBean.getHint();
         this.timeLimit = problemBean.getTimeLimit();
         this.memoryLimit = problemBean.getMemoryLimit();
         this.submitNumber = 0;
@@ -152,6 +156,14 @@ public class Problem {
 
     public void setSampleOutput(String sampleOutput) {
         this.sampleOutput = sampleOutput;
+    }
+
+    public String getHint() {
+        return hint;
+    }
+
+    public void setHint(String hint) {
+        this.hint = hint;
     }
 
     public Integer getSubmitNumber() {

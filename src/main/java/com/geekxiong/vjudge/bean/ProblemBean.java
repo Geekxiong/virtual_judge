@@ -11,6 +11,7 @@ public class ProblemBean {
     private String output;
     private String sampleInput;
     private String sampleOutput;
+    private String hint;
     private String originUrl;
 
     public String getOjName() {
@@ -93,6 +94,14 @@ public class ProblemBean {
         this.sampleOutput = sampleOutput;
     }
 
+    public String getHint() {
+        return hint;
+    }
+
+    public void setHint(String hint) {
+        this.hint = hint;
+    }
+
     public String getOriginUrl() {
         return originUrl;
     }
@@ -106,14 +115,15 @@ public class ProblemBean {
         return "ProblemBean{" +
                 "ojName='" + ojName + '\'' +
                 ", probId='" + probId + '\'' +
-                ", timeLimit='" + timeLimit + '\'' +
-                ", memoryLimit='" + memoryLimit + '\'' +
+                ", timeLimit=" + timeLimit +
+                ", memoryLimit=" + memoryLimit +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", input='" + input + '\'' +
                 ", output='" + output + '\'' +
                 ", sampleInput='" + sampleInput + '\'' +
                 ", sampleOutput='" + sampleOutput + '\'' +
+                ", hint='" + hint + '\'' +
                 ", originUrl='" + originUrl + '\'' +
                 '}';
     }

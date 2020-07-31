@@ -150,6 +150,7 @@ public class FZURemoteUtil implements RemoteUtil {
         String sampleOutput = CommonUtil.regFind(html, "Sample Output</h2>\\s*<div class=\"data\">([\\s\\S]*?)</div>\\s*(<h2><img|</div>\\s*<br />)");
         problemBean.setSampleInput(sampleInput);
         problemBean.setSampleOutput(sampleOutput);
+        problemBean.setHint(CommonUtil.regFind(html, "Hint</h2>([\\s\\S]+?)(<h2><img|</div>\\s*<br />)"));
 
         return problemBean;
     }
