@@ -3,8 +3,8 @@ package com.geekxiong.vjudge.bean;
 public class ProblemBean {
     private String ojName;
     private String probId;
-    private String timeLimit;
-    private String memoryLimit;
+    private Integer timeLimit;
+    private Integer memoryLimit;
     private String title;
     private String description;
     private String input;
@@ -29,19 +29,19 @@ public class ProblemBean {
         this.probId = probId;
     }
 
-    public String getTimeLimit() {
+    public Integer getTimeLimit() {
         return timeLimit;
     }
 
-    public void setTimeLimit(String timeLimit) {
+    public void setTimeLimit(Integer timeLimit) {
         this.timeLimit = timeLimit;
     }
 
-    public String getMemoryLimit() {
+    public Integer getMemoryLimit() {
         return memoryLimit;
     }
 
-    public void setMemoryLimit(String memoryLimit) {
+    public void setMemoryLimit(Integer memoryLimit) {
         this.memoryLimit = memoryLimit;
     }
 

@@ -135,19 +135,14 @@ public class HDURemoteUtil implements RemoteUtil {
         String title = titleNode.text();
         problemBean.setTitle(title);
 
-        Element timeAndMemoryLimitNode = doc.selectFirst("span[style=font-family:Arial;font-size:12px;font-weight:bold;color:green]");
-        String tmpStr = timeAndMemoryLimitNode.html();
-        tmpStr = tmpStr.substring(0, tmpStr.indexOf("<br>"));
-        String[] tmpStrs = tmpStr.split("&nbsp;&nbsp;&nbsp;&nbsp;");
-        String timeLimit = tmpStrs[0].replace("Time Limit: ", "");
-        String memoryLimit = tmpStrs[1].replace("Memory Limit: ", "");
-        problemBean.setTimeLimit(timeLimit);
-        problemBean.setMemoryLimit(memoryLimit);
+        // 获取int 类型的时间限制和内存限制
+        problemBean.setTimeLimit(Integer.parseInt(CommonUtil.regFind(html, "(\\d*) MS")));
+        problemBean.setMemoryLimit(Integer.parseInt(CommonUtil.regFind(html, "/(\\d*) K")));
 
         Elements tmpEls = doc.select("div.panel_title[align=left]");
         for (Element el: tmpEls) {
             Element curEl = el.nextElementSibling();
-            tmpStr = el.text().trim();
+            String tmpStr = el.text().trim();
             switch (tmpStr) {
                 case "Problem Description":
                     problemBean.setDescription(curEl.html());

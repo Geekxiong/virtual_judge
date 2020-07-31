@@ -24,10 +24,10 @@ public class Problem {
     private String description;
 
     @Column()
-    private String timeLimit;
+    private Integer timeLimit;
 
     @Column()
-    private String memoryLimit;
+    private Integer memoryLimit;
 
     @Column(columnDefinition="text")
     private String input;
@@ -106,19 +106,19 @@ public class Problem {
         this.description = description;
     }
 
-    public String getTimeLimit() {
+    public Integer getTimeLimit() {
         return timeLimit;
     }
 
-    public void setTimeLimit(String timeLimit) {
+    public void setTimeLimit(Integer timeLimit) {
         this.timeLimit = timeLimit;
     }
 
-    public String getMemoryLimit() {
+    public Integer getMemoryLimit() {
         return memoryLimit;
     }
 
-    public void setMemoryLimit(String memoryLimit) {
+    public void setMemoryLimit(Integer memoryLimit) {
         this.memoryLimit = memoryLimit;
     }
 

@@ -136,14 +136,9 @@ public class FZURemoteUtil implements RemoteUtil {
         String title = titleNode.text();
         problemBean.setTitle(title);
 
-        Element timeAndMemoryLimitNode = doc.selectFirst("div.problem_desc>h3");
-        String tmpStr = timeAndMemoryLimitNode.html();
-        tmpStr = tmpStr.split("<br>")[1];
-        String[] tmpStrs = tmpStr.split("&nbsp;&nbsp;&nbsp;&nbsp;");
-        String timeLimit = tmpStrs[0].replace("Time Limit: ", "");
-        String memoryLimit = tmpStrs[1].replace("Memory Limit : ", "");
-        problemBean.setTimeLimit(timeLimit);
-        problemBean.setMemoryLimit(memoryLimit);
+        // 获取int 类型的时间限制和内存限制
+        problemBean.setTimeLimit(Integer.parseInt(CommonUtil.regFind(html, "Time Limit: (\\d+) mSec")));
+        problemBean.setMemoryLimit(Integer.parseInt(CommonUtil.regFind(html, "Memory Limit : (\\d+) KB")));
 
         Elements contentNodes = doc.select("div.problem_content");
         Elements contentDescNodes = contentNodes.select("div.pro_desc");
